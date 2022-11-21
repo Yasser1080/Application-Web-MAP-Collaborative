@@ -32,6 +32,7 @@ var latlngs;
 var polyline;
 
 function init(){
+	array = [];
 	mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
 	mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
@@ -80,10 +81,21 @@ function init(){
 	
 	map.on('locationfound', onLocationFound);
 	map.on('locationerror', onLocationError);
+
+	$("#test").click(test);
+}
+
+function test(){
+	$.ajax({
+        type: "GET",
+        url: "https://opendata.paris.fr/explore/dataset/restaurants-casvp/download?format=json&timezone=Europe/Berlin&use_labels_for_header=false",
+        success: function(retour){
+            console.log(retour);
+        }
+    });
 }
 
 function afficher(){
-	
 	$.ajax({
         type: "GET",
         url: "https://nominatim.openstreetmap.org/search?&q="+recherche.val()+"&limit=1&format=json",
@@ -128,7 +140,7 @@ function itineraire(){
 					L.marker(coordonnees1).addTo(map);
 					$.ajax({
 						type: "GET",
-						url: "https://maps.open-street.com/api/route/?origin="+(lat0)+","+(lot0)+"&destination="+(lat1)+","+(lot1)+"&mode=driving&key=0fa914417d534cfe7fa01ac004ecb389",
+						url: "https://maps.open-street.com/api/route/?origin="+lat0+","+lot0+"&destination="+lat1+","+lot1+"&mode=driving&key=0fa914417d534cfe7fa01ac004ecb389",
 						success: function(retour3){
 							console.log(retour3);
 							ite = retour3.polyline;
