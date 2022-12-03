@@ -1,0 +1,31 @@
+/* DEBUT DU SCRIPT*/
+
+/* REM ETAPE 1 : SUPPRESSION DES TABLES*/
+
+/* REM ETAPE 2 : CREATION DES TABLES*/
+
+CREATE TABLE compte
+(
+idCompte INTEGER AUTO_INCREMENT PRIMARY KEY,
+Nom VARCHAR(50),
+Prenom VARCHAR(50),
+Mail VARCHAR(50),
+Mdp VARCHAR(50)
+);
+
+
+/* REM ETAPE 3 : CREATION DES CONTRANTES*/
+
+ALTER TABLE compte
+ADD CONSTRAINT U_Nom_Prenom_Mail UNIQUE(Nom, Prenom, Mail);
+
+ALTER TABLE compte
+ADD CONSTRAINT U_Mail UNIQUE(Mail);
+
+
+/* REM ETAPE 4 : INSERTION DES DONNEES*/
+
+INSERT INTO compte (Nom, Prenom, Mail, Mdp) 
+VALUES('Marheraoui', 'Amin', 'amin.marheraoui@hotmail.com', 'amintest');
+
+/* REM SCRIPT COMPLETEMENT TERMINE*/
