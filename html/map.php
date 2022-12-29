@@ -29,16 +29,30 @@
     <!-- <link rel="stylesheet" href="style.css" /> -->
 
 
-    <script src="../js/jquery-3.6.1.min.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/Polyline.encoded.js"></script>
-    <script src="../js/MarkerClusterGroup.js"></script>
+    <script src="../assets/js/jquery-3.6.1.min.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script src="../assets/js/Polyline.encoded.js"></script>
+    <script src="../assets/js/MarkerClusterGroup.js"></script>
     <script src="https://kit.fontawesome.com/cf00848303.js" crossorigin="anonymous"></script>	
 
     <link rel="stylesheet" type="text/css" href="../assets/css/style_carte.css">
     <link rel="stylesheet" href="../assets/css/MarkerCluster.css" />
     <link rel="stylesheet" href="../assets/css/MarkeurClusterDefault.css" />
     <link rel="stylesheet" href="../assets/css/menu.css"/> 
+
+    <script type="text/javascript">
+      $(function(){
+        $("#valideavis").on("click",function (){
+              $.post("../php/ajouteravis.php",{idCOmpte : $("#compte").val(), nom : $("#nom").val(), prenom : $("#prenom").val(), id : $("#id").val(), parc : $("#parc").val(), com : $("#com").val()},function(data){
+                alert(data);
+                $("#com").val("");
+                $("#h3avis").html("");
+              });
+              return false;
+            });
+        
+      })
+    </script>
   </head>
 
   <body>
@@ -66,62 +80,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com/ License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96C43 32 0 75 0 128V384c0 53 43 96 96 96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H96c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32h64zM504.5 273.4c4.8-4.5 7.5-10.8 7.5-17.4s-2.7-12.9-7.5-17.4l-144-136c-7-6.6-17.2-8.4-26-4.6s-14.5 12.5-14.5 22v72H192c-17.7 0-32 14.3-32 32l0 64c0 17.7 14.3 32 32 32H320v72c0 9.6 5.7 18.2 14.5 22s19 2 26-4.6l144-136z" /></svg>
         </li>
       </ul>
-
-      <?php
-      if(!empty($_POST['com'])){
-        // Patch XSS
-        $idCOmpte = $data['idCompte'];
-        $nom = $data['Nom'];
-        $prenom = $data['Prenom'];
-        $id = htmlspecialchars($_POST['id']);
-        $parc = htmlspecialchars($_POST['parc']);
-        $com = htmlspecialchars($_POST['com']);
-    
-        // On vérifie si l'utilisateur existe
-        $check = $pdo->prepare('SELECT idParc, Nom FROM parc WHERE idParc = ?');
-        $check->execute(array($id));
-        $data = $check->fetch();
-        $row = $check->rowCount();
-    
-        // Si la requete renvoie un 0 alors l'utilisateur n'existe pas 
-        if($row == 0){ 
-          $insert = $pdo->prepare('INSERT INTO parc(idParc, Nom) VALUES(:idparc, :nom)');
-          $insert->execute(array(
-              'idparc' => $id,
-              'nom' => $parc,
-          ));
-    
-          $insert = $pdo->prepare('INSERT INTO commentaire(idCompte, idParc, Nom, Prenom, Commentaire) VALUES(:idcompte, :idparc, :nom, :prenom, :commentaire)');
-          $insert->execute(array(
-              'idcompte' => $idCOmpte,
-              'idparc' => $id,
-              ':nom' => $nom,
-              ':prenom' => $prenom,
-              'commentaire' => $com,
-          ));
-
-          echo '<script language="Javascript">
-            alert ("Avis enregistrer :)" )
-          </script>';
-        
-        } 
-        else{
-          $insert = $pdo->prepare('INSERT INTO commentaire(idCompte, idParc, Nom, Prenom, Commentaire) VALUES(:idcompte, :idparc, :nom, :prenom, :commentaire)');
-          $insert->execute(array(
-              'idcompte' => $idCOmpte,
-              'idparc' => $id,
-              ':nom' => $nom,
-              ':prenom' => $prenom,
-              'commentaire' => $com,
-          ));
-          echo '<script language="Javascript">
-            alert ("Avis enregistrer :)")
-          </script>';
-
-        }  
-      }
-    ?>
-
       <div class="sidebar-content">
         <div class="item-content" id="menu">
           <h2>BIENVENUE SUR MASEIB</h2>
@@ -143,10 +101,12 @@
           <h2>Profil</h2>
           <div class="content">
             <h3>Les informations de votre profil dans les services MASEIB</h3><br>
+            <h4>N° du compte</h4>
+            <input type="text" id="compte" name = "compte" value ="<?php echo $data['idCompte'] ?>" disabled><br><br>
             <h4>Nom</h4>
-            <input type="text" id="nom" value ="<?php echo $data['Nom'] ?>" disabled><br><br>
+            <input type="text" id="nom" name = "nom" value ="<?php echo $data['Nom'] ?>" disabled><br><br>
             <h4>Prenom</h4>
-            <input type="text" id="prenom" value ="<?php echo $data['Prenom'] ?>" disabled><br><br>
+            <input type="text" id="prenom" name = "prenom" value ="<?php echo $data['Prenom'] ?>" disabled><br><br>
             <h4>Mail</h4>
             <input type="text" id="mail" value ="<?php echo $data['Mail'] ?>" disabled><br><br>
             <h4>Mot de passe</h4>
@@ -174,7 +134,6 @@
             <input type="radio" name="mode" value="walking" class="fld-mode">
             </form><br>
             <input id="valider" type="submit" value="Itinéraire"><br><br>
-            <!-- <input id="clearitine" type="submit" value="clear"> -->
             <h4 id="km"></h4>
             <br><h4 id="temps"></h4> 
             </div>
@@ -186,36 +145,18 @@
             <div id="emaill" class="content">
               <h3 id="msg">Veuillez sélectionner votre parc</h3>
             </div>
-            <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-              <div id="emailll" class="content">
+            <div id="emailll" class="content">
+              <form method="post">
                 <h1 id ="nomparc" name="parc"></h1>
                 <input type="text" id="id" name="id" placeholder="ID du parc" value="">
                 <input type="text" id="parc" name="parc" placeholder="Nom du parc" value=""> <br>
                 <textarea type="text" id="com" name="com" placeholder="Votre avis sur le parc" value="" rows="10" cols="52"></textarea>
                 <br><br><input id="valideavis" type="submit" value="Valider"><br><br>
-                <input id="afficheravis" type="submit" name = "submit" value="Afficher les anciens avis"><br>
-              </div>
-            </form>
-            <?php
-              if (isset($_POST['submit'])){
-                $id = htmlspecialchars($_POST['id']);
-                $commentaires = $pdo->prepare('SELECT * FROM commentaire WHERE idParc = ? ORDER BY idCom DESC');
-                $commentaires->execute(array($id));
-                
-                $row = $commentaires->rowCount();
-
-                if($row > 0){ 
-                  while($data = $commentaires->fetch()){?>
-                    <h4>Les avis du parc sont : <br><br> <?= $data['Nom'], ' ', $data['Prenom'], ': ' , $data['Commentaire']?></h4><?php 
-                  }
-                }
-                else{?>
-                  <br><h3>Pas d'avis sur le parc <br>Soyez le 1er a donner votre avis sur le parc</h3><?php                   
-                }
-              }
-            ?>
+              </form>
+              <input id="afficheravis" type="submit" name = "submit" value="Afficher les anciens avis"><br>
+              <h3 id="h3avis"></h3>
+            </div>
           </div>
-        
         <div class="item-content" id="settings">
           <h2>Paramètre</h2>
           <div class="content">
@@ -226,7 +167,6 @@
         </div>
       </div>
     </div>
-
     <div id="map"></div>
   </body>
 </html>

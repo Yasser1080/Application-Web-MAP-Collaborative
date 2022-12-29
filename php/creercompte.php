@@ -126,7 +126,7 @@
 <!--===============================================================================================-->	
 	<script src="https://kit.fontawesome.com/cf00848303.js" crossorigin="anonymous"></script>	
 <!--===============================================================================================-->	
-	<script src="../js/jquery-3.2.1.min.js"></script>
+	<script src="../assets/js/jquery-3.6.1.min.js"></script>
 <!--===============================================================================================-->
 	<script src="../assets/vendor/bootstrap/js/popper.js"></script>
 	<script src="../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
@@ -140,7 +140,7 @@
 		})
 	</script>
 <!--===============================================================================================-->
-	<script src="../js/main_login.js"></script>
+	<script src="../assets/js/main_login.js"></script>
 
 </body>
 </html>

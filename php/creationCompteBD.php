@@ -32,7 +32,6 @@ if(!empty($_POST['nom']) && !empty($_POST['prenom']) && !empty($_POST['email']) 
                     'password' => $password,
                 ));
                 // On redirige avec le message de succès
-                //header('Location:creercompte.php?reg_err=success');
                 header('Location:connexion.php?reg_err=success'); 
                 die();
             }

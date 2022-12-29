@@ -6,10 +6,6 @@ var marker;
 var elementClicked = false;
 
 function init(){
-  /* eslint-disable no-undef */
-  /**
-   * location button
-   */
 
   mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
   mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
@@ -197,6 +193,7 @@ function init(){
   $("#id").hide();   
   park = L.layerGroup();
   var markersCluster;
+  var idparcc;
 
   $.ajax({
     type: "GET",
@@ -208,6 +205,8 @@ function init(){
           var latLng = new L.LatLng(retour.at(j).parks.at(i).latitude, retour.at(j).parks.at(i).longitude);
           marker = new L.Marker(latLng, {id: retour.at(j).parks.at(i).id, name:retour.at(j).parks.at(i).name}).addTo(park); 
           marker.on("click", function (){
+            $("#h3avis").html("");
+            idparcc = this.options.id;
             elementClicked = true;
             $("#emailll").show();
             $("#emaill").hide();
@@ -218,6 +217,12 @@ function init(){
             showContent("email");
             addRemoveActiveItem($("li").get().at(3), "active-item");
             elementClicked = false;
+            $("#afficheravis").on("click",function (){
+              $.post("../php/affichercom.php",{id : idparcc},function(data){
+                $("#h3avis").html(data);
+              });
+              return false;
+            });
           });
           markersCluster.addLayer(marker);
         }
@@ -242,7 +247,6 @@ function init(){
       showContent(target.dataset.item);
       // add active class to menu item
       addRemoveActiveItem(target, 'active-item');
-
       aff();
     });
   });
@@ -253,7 +257,6 @@ function init(){
     closeSidebar();
   });
   
-
   // remove active class from menu item and content
   function addRemoveActiveItem(target, className) {
     const element = $(`.${className}`);
@@ -275,13 +278,6 @@ function init(){
       closeSidebar();
     }
   });
-
-  // // close sidebar when click outside
-  // $(document).click((e) => {
-  //   if (!e.target.closest('.sidebar')) {
-  //     closeSidebar();
-  //   }
-  // });
 
   // --------------------------------------------------
   // close sidebar
@@ -314,22 +310,23 @@ function init(){
       position: "topleft",
       className: "leaflet-autocomplete",
     },
-
+  
     // method
     onAdd: function () {
       return this._initialLayout();
     },
-
+  
     _initialLayout: function () {
       // create button
-      const container = $('<div></div>')
-        .addClass('leaflet-bar ' + this.options.className)
-        .click(function (e) {
-          e.stopPropagation();
-        })
-        .html(buttonTemplate);
+      const container = $('<div>').addClass(
+        'leaflet-bar ' + this.options.className
+      );
   
-      return container;
+      L.DomEvent.disableClickPropagation(container[0]);
+  
+      container.html(buttonTemplate);
+  
+      return container[0];
     },
   });
 
@@ -342,17 +339,17 @@ function init(){
   const root = $('#marker');
 
   function addClassToParent() {
-    const searchBtn = $('.leaflet-search');
-    searchBtn.click(function (e) {
+    var searchBtn = $('.leaflet-search');
+    searchBtn.click(function(e) {
       // toggle class
-      $(this).closest('.leaflet-autocomplete').toggleClass('active-autocomplete');
-
+      $(e.target).closest('.leaflet-autocomplete').toggleClass('active-autocomplete');
+  
       // add placeholder
       root.attr('placeholder', 'Search ...');
-
+  
       // focus on input
       root.focus();
-
+  
       // click on clear button
       clickOnClearButton();
     });
@@ -366,50 +363,42 @@ function init(){
   addClassToParent();
 
   // function clear input
-  map.on("click", function () {
+  map.on("click", function() {
     $('.leaflet-autocomplete').removeClass('active-autocomplete');
     clickOnClearButton();
   });
-
-  // autocomplete section
-  // more config find in https://github.com/tomik23/autocomplete
-  // --------------------------------------------------------------
 
   new Autocomplete("marker", {
     delay: 1000,
     selectFirst: true,
     howManyCharacters: 2,
-
+  
     onSearch: function ({ currentValue }) {
       const api = `https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=${encodeURI(
         currentValue
       )}`;
-
-      /**
-       * Promise
-       */
       return new Promise((resolve) => {
         $.ajax({
-          type: "GET",
           url: api,
-          success: function (data) {
+          type: 'GET',
+          success: function(data) {
             resolve(data.features);
           },
-          error: function (error) {
+          error: function(error) {
             console.error(error);
-          },
+          }
         });
       });
     },
 
-    onResults: ({ currentValue, matches, template }) => {
+    onResults: function ({ currentValue, matches, template }) {
       const regex = new RegExp(currentValue, "i");
       // checking if we have results if we don't
       // take data from the noResults method
       return matches === 0
         ? template
         : matches
-            .map((element) => {
+            .map(function(element) {
               return `
                 <li role="option">
                   <p>${element.properties.display_name.replace(
@@ -421,21 +410,18 @@ function init(){
             .join("");
     },
 
-    onSubmit: ({ object }) => {
+    onSubmit: function ({ object }) {
       const { display_name } = object.properties;
       const cord = object.geometry.coordinates;
-      // custom id for marker
-      // const customId = Math.random();
 
-      // remove last marker
-      $(map).eachLayer(function (layer) {
+      map.eachLayer(function (layer) {
         if (layer.options && layer.options.pane === "markerPane") {
-          if ($(this._icon).hasClass("leaflet-marker-locate")) {
-            $(map).removeLayer(layer);
+          if (layer._icon.classList.contains("leaflet-marker-locate")) {
+            map.removeLayer(layer);
           }
         }
       });
-
+      
       // add marker
       const marker = L.marker([cord[1], cord[0]], {
         title: display_name,
@@ -448,12 +434,13 @@ function init(){
       map.setView([cord[1], cord[0]], 8);
 
       // add class to marker
-      L.DomUtil.addClass(marker._icon, "leaflet-marker-locate");
+      $(marker._icon).addClass("leaflet-marker-locate");
     },
 
     // the method presents no results
-    noResults: ({ currentValue, template }) =>
-      template(`<li>Adresse non trouver: "${currentValue}"</li>`),
+    noResults: function ({ currentValue, template }) {
+      return template(`<li>No results found: "${currentValue}"</li>`);
+    }
   });
 
   var btnvalider;
@@ -461,15 +448,12 @@ function init(){
   btnvalider = $("#valider");
   btnvalider.unbind("click", itineraire);
   btnvalider.bind("click", itineraire);
-
-
 };
 
 function aff (){
   if($("#maiil").hasClass("active-item") && elementClicked == false){
     $("#emailll").hide();
     $("#emaill").show();
-
   }
 }
 

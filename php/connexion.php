@@ -56,15 +56,6 @@
 						</button>
 					</div>
 
-					<div class="text-center p-t-12">
-						<span class="txt1">
-							Oublié
-						</span>
-						<a class="txt2" href="#">
-							Mot de passe?
-						</a>
-					</div>
-
 					<?php 
 						if(isset($_GET['reg_err']))
 						{
@@ -80,8 +71,6 @@
 									</div>
 								<?php
 								break;
-
-
 							}
 						}
 						if(isset($_GET['login_err']))
@@ -140,7 +129,7 @@
 		})
 	</script>
 <!--===============================================================================================-->
-	<script src="../js/main_login.js"></script>
+	<script src="../assets/js/main_login.js"></script>
 
 </body>
 </html>
