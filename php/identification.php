@@ -5,9 +5,9 @@
     $compte = rechercherCompte($login, $mdp);
     
     if($compte != null){
-        include "../html/map.html";
+        include "../html/map.php";
     }
     else{
-        include "../html/connexionNoOk.html";
+        header('Location:connexion.php?reg_err=mailormdp');
     }
 ?>

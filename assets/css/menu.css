@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow&display=swap');
+.content  {
+    font-family: 'Archivo Narrow', sans-serif;
+    align-items: center;
+    
+}
+.item-content{
+    font-family: 'Archivo Narrow', sans-serif;
+    
+}
+.content input{
+    width:100%;
+    
+}
+
+.txt{
+    width:100%;
+    margin-top: 10%;
+    
+}
+
+
+.btn{ 
+    margin-top: 5%;
+    width:30%;
+    
+
+}
+.transport{
+    margin-top:5%
+}
+input#com {
+    width:100%
+}

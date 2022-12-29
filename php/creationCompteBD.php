@@ -1,51 +1,53 @@
 <?php
-require "connexionBD.php";
-function newCompte($nom, $prenom, $mail, $mdp) {	
-    //On définit le handler d'erreur
-    $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-	try {
-        // se connecter à la base de données
-        $pdo = seConnecterBD();
-        // préparer (compiler => générer code exécutable) la requête
-        $sql="INSERT INTO compte (Nom,Prenom,Mail,Mdp) VALUES (:valNom, :valPrenom, :valMail, :valmdp)"; 
-        $stmt = $pdo->prepare($sql);		
-        // initaliser la valeur des paramètres de la requête (avant son exécution)
-        $stmt->bindParam(":valNom", $nom);
-        $stmt->bindParam(":valPrenom", $prenom);
-        $stmt->bindParam(":valMail", $mail);
-        $stmt->bindParam(":valmdp", $mdp);
-        // exécuter la requête (par le au SGBD)
-        // $bool = $stmt->execute();	
-        $dbh->exec($sql); 
+require_once "connexionBD.php";
+$pdo = seConnecterBD ();
 
-        // $errors = array('nom'=>'', 'prenom'=>'', 'mail'=>'' 'mdp'=>'');
+// Si les variables existent et qu'elles ne sont pas vides
+if(!empty($_POST['nom']) && !empty($_POST['prenom']) && !empty($_POST['email']) && !empty($_POST['pass']))
+{
+    // Patch XSS
+    $nom = htmlspecialchars($_POST['nom']);
+    $prenom = htmlspecialchars($_POST['prenom']);
+    $email = htmlspecialchars($_POST['email']);
+    $password = htmlspecialchars($_POST['pass']);
 
-        // if(empty($_POST['nom'])){
-        //     echo 'A title is required <br />';
-        // } 
-        // else {
-        //     $title = $ POST['nom'];
-        //         if(!preg_match('/*[a-zA-Z\s]+$/', $title)){
-        //             $errors['title'] = 'Title must be letters and spaces only';
-        //         }
-        // }
+    // On vérifie si l'utilisateur existe
+    $check = $pdo->prepare('SELECT Nom, Prenom, Mail, Mdp FROM compte WHERE Mail = ?');
+    $check->execute(array($email));
+    $data = $check->fetch();
+    $row = $check->rowCount();
 
-        // if(empty($_POST['prenom'])){
-        //     echo 'A title is required <br />';
-        // } 
-        // else {
-        //     $title = $ POST['prenom'];
-        //         if(!preg_match('/*[a-zA-Z\s]+$/', $title)){
-        //             $errors['title'] = 'Title must be letters and spaces only';
-        //         }
-        // }
-
-	}	
-	catch (PDOException $e) {
-		// Erreur à l'exécution de la requête 
-		$erreur = $e->getMessage();
-		echo utf8_encode("Erreur d'accès à la base de données : $erreur \n");		
-		return null;
-	}
+    $email = strtolower($email); // on transforme toute les lettres majuscule en minuscule pour éviter que Foo@gmail.com et foo@gmail.com soient deux compte différents ..
+    
+    // Si la requete renvoie un 0 alors l'utilisateur n'existe pas 
+    if($row == 0){ 
+        if(preg_match('/^[a-zA-Z]+$/', $_POST['nom'])){    
+            if (preg_match('/^[a-zA-Z]+$/', $_POST['prenom'])){
+                // On insère dans la base de données
+                $insert = $pdo->prepare('INSERT INTO compte(Nom, Prenom, Mail, Mdp) VALUES(:nom, :prenom, :email, :password)');
+                $insert->execute(array(
+                    'nom' => $nom,
+                    'prenom' => $prenom,
+                    'email' => $email,
+                    'password' => $password,
+                ));
+                // On redirige avec le message de succès
+                //header('Location:creercompte.php?reg_err=success');
+                header('Location:connexion.php?reg_err=success'); 
+                die();
+            }
+            else{
+                header('Location:creercompte.php?reg_err=prenom'); 
+                die();
+            }
+        }
+        else{
+            header('Location:creercompte.php?reg_err=nom'); 
+            die();
+        }
+    }
+    else{ 
+        header('Location:creercompte.php?reg_err=already'); 
+        die();
+    }
 }
-?>

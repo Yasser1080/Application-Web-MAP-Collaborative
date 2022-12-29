@@ -13,6 +13,21 @@ Mail VARCHAR(50),
 Mdp VARCHAR(50)
 );
 
+CREATE TABLE parc
+(
+idParc INTEGER PRIMARY KEY,
+Nom VARCHAR(50)
+);
+
+CREATE TABLE commentaire
+(
+idCompte INTEGER,
+idParc INTEGER,
+idCom INTEGER,
+Nom VARCHAR(50) NOT NULL,
+Prenom VARCHAR(50)NOT NULL,
+Commentaire VARCHAR(255)
+);
 
 /* REM ETAPE 3 : CREATION DES CONTRANTES*/
 
@@ -22,6 +37,19 @@ ADD CONSTRAINT U_Nom_Prenom_Mail UNIQUE(Nom, Prenom, Mail);
 ALTER TABLE compte
 ADD CONSTRAINT U_Mail UNIQUE(Mail);
 
+ALTER TABLE commentaire
+ADD CONSTRAINT PK_idCompte_idParc PRIMARY KEY(idCompte, idParc);
+
+ALTER TABLE commentaire
+ADD CONSTRAINT FK_idCompte FOREIGN KEY(idCompte) REFERENCES Compte(IdCompte);
+
+ALTER TABLE commentaire
+ADD CONSTRAINT FK_idCompte_idParc FOREIGN KEY(idParc) REFERENCES Parc(idParc);
+
+ALTER TABLE commentaire
+ADD CONSTRAINT U_idCom UNIQUE(idCom);
+
+ALTER TABLE commentaire CHANGE idCom idCom INT(11) NOT NULL AUTO_INCREMENT;
 
 /* REM ETAPE 4 : INSERTION DES DONNEES*/
 
