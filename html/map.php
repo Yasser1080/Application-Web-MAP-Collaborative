@@ -134,6 +134,7 @@
             <input type="radio" name="mode" value="walking" class="fld-mode">
             </form><br>
             <input id="valider" type="submit" value="Itinéraire"><br><br>
+            <input id="clear" type="submit" value="Effacer"><br><br>
             <h4 id="km"></h4>
             <br><h4 id="temps"></h4> 
             </div>

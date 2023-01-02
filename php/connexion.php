@@ -82,7 +82,7 @@
 								?>
 									<br>
 									<div class="alert alert-danger">
-										<strong>Erreur</strong> Email ou Mot de passe erroner 
+										<strong>Erreur</strong> Email ou Mot de passe erroné
 									</div>
 								<?php
 								break;

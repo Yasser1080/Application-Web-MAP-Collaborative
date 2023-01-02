@@ -8,9 +8,8 @@
     $row = $commentaires->rowCount();
 
     if($row > 0){ 
-        echo "Les avis du parc sont :<br>";
         while($data = $commentaires->fetch()){
-            echo "\n\n",$data['Nom'], ' ', $data['Prenom'], ': ' , $data['Commentaire'],'<br>';
+            echo "Les avis du parc sont :<br>","\n\n",$data['Nom'], ' ', $data['Prenom'], ': ' , $data['Commentaire'];
         }
         
     }

@@ -442,12 +442,24 @@ function init(){
       return template(`<li>No results found: "${currentValue}"</li>`);
     }
   });
+  
+  // set maxBounds
+  map.setMaxBounds(map.getBounds(44.43202274389587, 11.434871837045364));
+    
+  // zoom the map to the polyline
+  map.fitBounds(getBounds(44.43202274389587, 11.434871837045364), { reset: true });
 
   var btnvalider;
+  var btnclearitine;
 
   btnvalider = $("#valider");
+  btnclearitine = $("#clear");
+
   btnvalider.unbind("click", itineraire);
   btnvalider.bind("click", itineraire);
+
+  btnclearitine.unbind("click", clearPolyline);
+  btnclearitine.bind("click", clearPolyline);
 };
 
 function aff (){
@@ -507,4 +519,17 @@ function itineraire() {
       });
     }
   });
+}
+
+function clearPolyline() {
+  markers_ville.forEach(item => {
+    map.removeLayer(item)
+  });
+  $("#depart").val("");
+  $("#destination").val("");
+  $("#km").html("");
+  $("#temps").html("");
+}
+
+function getBounds(southWest, northEast) {return new L.LatLngBounds(41.616010104253306, 10.743064376825187);
 }
