@@ -443,12 +443,6 @@ function init(){
     }
   });
   
-  // set maxBounds
-  map.setMaxBounds(map.getBounds(44.43202274389587, 11.434871837045364));
-    
-  // zoom the map to the polyline
-  map.fitBounds(getBounds(44.43202274389587, 11.434871837045364), { reset: true });
-
   var btnvalider;
   var btnclearitine;
 
@@ -529,7 +523,4 @@ function clearPolyline() {
   $("#destination").val("");
   $("#km").html("");
   $("#temps").html("");
-}
-
-function getBounds(southWest, northEast) {return new L.LatLngBounds(41.616010104253306, 10.743064376825187);
 }
