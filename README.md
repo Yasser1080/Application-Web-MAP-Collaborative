@@ -10,7 +10,7 @@ Voici notre répertoire sur notre application Web qui permet de donner un avis s
 
 ## <u>Equipe</u>
 Le lien pour le site: https://maseib-web.000webhostapp.com/
-Afin que le site we soit fonctionnel veuillez installer l'extension CORS et l'activer comme décrit dans le rapport
+Afin que le site soit fonctionnel veuillez installer l'extension CORS et l'activer comme décrit dans le rapport
 
 <!-- RAPPORT -->
 ## Rapport
